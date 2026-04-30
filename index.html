@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Ambiental</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- <style>
+    body {
+        background: #f4f6f9;
+    }
+
+    .card {
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: none;
+        border-radius: 12px;
+    }
+
+    canvas {
+        max-height: 300px;
+    }
+</style> -->
+<style>
+    body {
+        font-size: small;
+    }
+    .grafico{
+        height: 400px;
+        width: 600px;
+        display: flex;
+        border-radius: 5px;
+        padding: 2px;
+        background-color: antiquewhite;
+    }
+    
+</style>
+</head>
+
+<body>
+
+<div>
+
+    <h2>Dashboard Ambiental</h2>
+
+    <!-- FORMULÁRIO -->
+    <div>
+        <div>
+
+            <h5>Inserir Dados</h5>
+
+            <form id="formDados">
+                <div>
+
+                    <div>
+                        <input
+                            type="text"
+                            id="local"
+                            placeholder="Local"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <input
+                            type="number"
+                            id="temp"
+                            placeholder="Temperatura (°C)"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <input
+                            type="number"
+                            id="ar"
+                            placeholder="Qualidade do Ar (%)"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <input
+                            type="number"
+                            id="ruido"
+                            placeholder="Ruído (dB)"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+                <button>
+                    Adicionar
+                </button>
+            </form>
+        </div>
+    </div>
+
+     <!-- GRÁFICOS -->
+    <div>
+
+        <div class="grafico">
+            <div class="grafico">
+                <!-- Cria um "desenho" na página, elementos gráficos. O canvas sozinho não cria nada-->
+                <canvas id="linha"></canvas>
+            </div>
+        </div>
+
+        <div class="grafico">
+            <div class="grafico">
+                <canvas id="barra"></canvas>
+            </div>
+        </div>
+
+        <div class="grafico">
+            <div class="grafico">
+                <canvas id="pizza"></canvas>
+            </div>
+        </div>
+
+        <div class="grafico">
+            <div class="grafico">
+                <canvas id="radar"></canvas>
+            </div>
+        </div>
+
+        <div class="grafico">
+            <div class="grafico">
+                <canvas id="area"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+// Espera toda a página carregar antes de executar o código
+document.addEventListener("DOMContentLoaded", () => {
+    // DOMContentLoaded - significa quando a página terminar de carregar
+
+    // ======================================================
+    // DADOS INICIAIS
+    // ======================================================
+
+    // Array com os dados ambientais
+    // Cada objeto representa um local
+    let dados = [
+        {
+            local: "Escola",
+            temp: 28,
+            ar: 70,
+            ruido: 60
+        },
+        {
+            local: "Sala Senai",
+            temp: 25,
+            ar: 90,
+            ruido: 40
+        },
+        {
+            local: "Sala 3ºA",
+            temp: 30,
+            ar: 50,
+            ruido: 80
+        }
+    ];
+
+    // ======================================================
+    // FUNÇÕES PARA PEGAR DADOS
+    // ======================================================
+
+    // Pega somente os nomes dos locais
+    // Exemplo: ["EScola"]
+    //Cria a função chamada getLabels
+    function getLabels() {
+        return dados.map(d => d.local);
+        //map percorreto todos os itens do array
+        // d representa cada elemento do array
+    }
+
+    // Pega somente as temperaturas
+    // Exemplo: [28, 25, 30]
+    function getTemp() {
+        return dados.map(d => d.temp);
+    }
+
+    // Pega somente a qualidade do ar
+    // Exemplo: [70, 90, 50]
+    function getAr() {
+        return dados.map(d => d.ar);
+    }
+
+    // Pega somente os níveis de ruído
+    // Exemplo: [60, 40, 80]
+    function getRuido() {
+        return dados.map(d => d.ruido);
+    }
+
+     // ======================================================
+    // PEGANDO O CANVAS DOS GRÁFICOS
+    // ======================================================
+
+    // Seleciona o canvas do gráfico de linha
+    const ctxLinha = document.getElementById('linha').getContext('2d');
+// ctx -> guarda o “modo de desenho” do canvas.
+// 2d -> Ativa o modo de desenho 2D do canvas.
+    // Seleciona o canvas do gráfico de barras
+    const ctxBarra = document.getElementById('barra').getContext('2d');
+
+    // Seleciona o canvas do gráfico de pizza
+    const ctxPizza = document.getElementById('pizza').getContext('2d');
+
+    // Seleciona o canvas do gráfico radar
+    const ctxRadar = document.getElementById('radar').getContext('2d');
+
+    // Seleciona o canvas do gráfico de área
+    const ctxArea = document.getElementById('area').getContext('2d');
+
+
+    // ======================================================
+    // GRÁFICO DE LINHA
+    // ======================================================
+
+    const linha = new Chart(ctxLinha, {
+
+        // Tipo do gráfico
+        type: 'line',
+
+        // Dados do gráfico
+        data: {
+
+            // Labels do eixo X
+            labels: getLabels(),
+
+            // Informações do gráfico
+            datasets: [{
+
+                // Nome da legenda
+                label: 'Temperatura',
+
+                // Valores
+                data: getTemp(),
+                 // Cor da linha
+                borderColor: 'red',
+
+                // Cor de fundo
+                backgroundColor: 'pink',
+
+                //Cor do preenchimento dos pontos
+                pointBackgroundColor: "red",
+
+                //Cor dos pontos
+                pointBorderColor: "yellow",
+
+                // Espessura da linha
+                borderWidth: 2
+            }]
+        }
+    });
+
+
+    
+    // ======================================================
+    // GRÁFICO DE BARRAS
+    // ======================================================
+
+    const barra = new Chart(ctxBarra, {
+
+        // Tipo barra
+        type: 'bar',
+
+        data: {
+
+            // Locais
+            labels: getLabels(),
+
+            datasets: [{
+
+                // Nome do gráfico
+                label: 'Ruído',
+
+                // Cor de fundo
+                backgroundColor: 'red',
+
+                // Dados do ruído
+                data: getRuido()
+            }]
+        }
+    });
+
+
+
+    // ======================================================
+    // GRÁFICO DE PIZZA
+    // ======================================================
+
+    const pizza = new Chart(ctxPizza, {
+
+        // Tipo pizza
+        type: 'pie',
+
+        data: {
+
+            // Nomes dos locais
+            labels: getLabels(),
+
+            datasets: [{
+
+                // Título
+                label: 'Qualidade do Ar',
+
+                backgroundColor: [
+                    'plum',
+                    'orange',
+                    'pink'
+                ],
+
+                // Valores
+                data: getAr()
+            }]
+        }
+    });
+
+
+
+    // ======================================================
+    // GRÁFICO RADAR
+    // ======================================================
+
+    const radar = new Chart(ctxRadar, {
+
+        // Tipo radar
+        type: 'radar',
+
+        data: {
+
+            labels: getLabels(),
+
+            datasets: [{
+
+                label: 'Comparação Ambiental',
+
+                // Dados usados
+                data: getTemp()
+            }]
+        }
+    });
+
+
+
+    // ======================================================
+    // GRÁFICO DE ÁREA
+    // ======================================================
+
+    const area = new Chart(ctxArea, {
+
+        // Tipo linha
+        type: 'line',
+
+        data: {
+
+            labels: getLabels(),
+
+            datasets: [{
+
+                label: 'Qualidade do Ar',
+
+                data: getAr(),
+
+                // Preenche a área abaixo da linha
+                fill: true
+            }]
+        }
+    });
+
+function atualizarGraficos() {
+
+        // Atualiza gráfico linha
+        //acessa os dados do gráfico de linha - data.label é as informações do eixo x
+        linha.data.labels = getLabels();
+        //sibstitui as labels antigas pelas novas
+        linha.data.datasets[0].data = getTemp();
+        linha.update();
+
+        // Atualiza gráfico barra
+        barra.data.labels = getLabels();
+        barra.data.datasets[0].data = getRuido();
+        barra.update();
+
+        // Atualiza gráfico pizza
+        pizza.data.labels = getLabels();
+        pizza.data.datasets[0].data = getAr();
+        pizza.update();
+
+        // Atualiza gráfico radar
+        radar.data.labels = getLabels();
+        radar.data.datasets[0].data = getTemp();
+        radar.update();
+
+        // Atualiza gráfico área
+        area.data.labels = getLabels();
+        area.data.datasets[0].data = getAr();
+        area.update();
+    }
+// Até aqui o gráfico não atualiza
+
+
+    // ======================================================
+    // FORMULÁRIO
+    // ======================================================
+
+    // Escuta o envio do formulário
+    document.getElementById("formDados").addEventListener("submit", function(e){
+
+        // Impede a página de recarregar
+        e.preventDefault();
+
+        // Cria um novo objeto com os dados digitados
+        const novo = {
+
+            // Nome do local
+            local: document.getElementById("local").value,
+
+            // Temperatura
+            temp: parseFloat(document.getElementById("temp").value),
+
+            // Qualidade do ar
+            ar: parseFloat(document.getElementById("ar").value),
+
+            // Ruído
+            ruido: parseFloat(document.getElementById("ruido").value)
+        };
+
+        // Adiciona o novo objeto no array
+        dados.push(novo);
+
+        // Atualiza os gráficos
+        atualizarGraficos();
+
+        // Limpa os campos do formulário
+        this.reset();
+
+    });
+
+});
+
+</script>
+
+    </body>
+</html>
