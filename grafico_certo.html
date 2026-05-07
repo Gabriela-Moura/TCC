@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dashboard Ambiental</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    body{
+        font-family: Arial;
+        padding: 20px;
+    }
+
+    .grafico{
+        width: 1000px;
+        margin: auto;
+    }
+</style>
+</head>
+
+<body>
+
+<h2>Tendência Geral das Métricas</h2>
+
+<div class="grafico">
+    <canvas id="linha"></canvas>
+</div>
+
+<script>
+
+const ctx = document.getElementById('linha').getContext('2d');
+
+new Chart(ctx, {
+
+    type: 'line',
+
+    data: {
+
+        labels: [
+            "00:00",
+            "04:00",
+            "08:00",
+            "12:00",
+            "16:00",
+            "20:00"
+        ],
+
+        datasets: [
+
+            {
+                label: 'Temperatura (°C)',
+                data: [22, 21, 23, 25, 24, 22],
+                borderColor: 'red',
+                backgroundColor: 'red',
+                tension: 0.4,
+                pointRadius: 4
+            },
+
+            {
+                label: 'Umidade (%)',
+                data: [55, 58, 52, 48, 50, 54],
+                borderColor: 'blue',
+                backgroundColor: 'blue',
+                tension: 0.4,
+                pointRadius: 4
+            },
+
+            {
+                label: 'Ruído (dB)',
+                data: [45, 42, 68, 72, 65, 48],
+                borderColor: 'orange',
+                backgroundColor: 'orange',
+                tension: 0.4,
+                pointRadius: 4
+            },
+
+            {
+                label: 'Qualidade do Ar',
+                data: [82, 85, 75, 70, 78, 80],
+                borderColor: 'green',
+                backgroundColor: 'green',
+                tension: 0.4,
+                pointRadius: 4
+            }
+
+        ]
+    },
+
+    options: {
+
+        responsive: true,
+
+        plugins: {
+
+            legend: {
+                position: 'bottom'
+            }
+        },
+
+        scales: {
+
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gráfico</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 30px;
+    }
+
+    .grafico-box {
+      width: 900px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #1f2937;
+    }
+  </style>
+</head>
+<body>
+
+<div class="grafico-box">
+  <h2>Tendência nas Últimas 24 Horas</h2>
+
+  <canvas id="grafico"></canvas>
+</div>
+
+<script>
+const ctx = document.getElementById('grafico');
+
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: [
+      '00:00','02:00','04:00','06:00',
+      '08:00','10:00','12:00','14:00',
+      '16:00','18:00','22:00'
+    ],
+    datasets: [{
+      label: 'Tendência',
+      data: [55, 57, 58, 56, 52, 49, 48, 47, 50, 53, 55],
+
+      borderColor: '#3b82f6',
+      backgroundColor: 'rgba(59,130,246,0.2)',
+
+      fill: true,
+      tension: 0.4,
+      borderWidth: 3,
+      pointRadius: 0
+    }]
+  },
+
+  options: {
+    responsive: true,
+
+    plugins: {
+      legend: {
+        display: false
+      }
+    },
+
+    scales: {
+      y: {
+        min: 0,
+        max: 60,
+        grid: {
+          color: '#e5e7eb'
+        }
+      },
+
+      x: {
+        grid: {
+          color: '#e5e7eb'
+        }
+      }
+    }
+  }
+});
+</script>
+
+</body>
+</html>

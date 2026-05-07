@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Ambiental</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<style>
+    body {
+        font-size: small;
+    }
+    .grafico{
+        height: 400px;
+        width: 600px;
+        display: flex;
+        border-radius: 5px;
+        padding: 2px;
+
+    }
+</style>
+
+<body>
+
+    <h5>Inserir Dados</h5>
+    
+    <form id="formDados">
+        <div>
+            <input
+                type="number"
+                id="temp"
+                placeholder="Temperatura (°C)"
+                required
+            >
+        </div><br>
+
+        <div>
+            <input
+                type="number"
+                id="ar"
+                placeholder="Qualidade do Ar (%)"
+                required
+            >
+        </div><br>
+
+        <div>
+            <input
+                type="number"
+                id="ruido"
+                placeholder="Ruído (dB)"
+                required
+            >
+        </div><br>
+                   
+        <div>
+            <input
+                type="number"
+                id="umidade"
+                placeholder="Umidade (%)"
+                required
+            >
+        </div><br>
+        
+        <div>
+            <input
+                type="time"
+                id="hora"
+                step="3600"
+                required
+            >
+        </div><br>
+
+    <button>Adicionar</button><br><br>
+    </form>
+
+    <h5>Tendência Geral das Métricas</h5>
+    
+    <div class="grafico">
+        <div class="grafico">
+            <!-- Cria um "desenho" na página, elementos gráficos. O canvas sozinho não cria nada-->
+            <canvas id="linha"></canvas>
+        </div>
+    </div>
+
+<script>
+    // Espera toda a página carregar antes de executar o código
+    document.addEventListener("DOMContentLoaded", () => {
+        // DOMContentLoaded - significa quando a página terminar de carregar
+
+        // ======================================================
+        // DADOS INICIAIS
+        // ======================================================
+
+        // Array com os dados ambientais
+        // Cada objeto representa um local
+        let dados = [
+            {
+                hora: "00:00",
+                temp: 0,
+                ar: 0,
+                ruido: 0,
+                umidade: 0
+            },
+        ];
+
+        // ======================================================
+        // FUNÇÕES PARA PEGAR DADOS
+        // ======================================================
+
+        // Pega somente os nomes dos locais
+        // Exemplo: ["EScola"]
+        //Cria a função chamada getLabels
+        function getLabels() {
+            return dados.map(d => d.local);
+            //map percorreto todos os itens do array
+            // d representa cada elemento do array
+        }
+
+        // Pega somente as temperaturas
+        // Exemplo: [28, 25, 30]
+        function getTemp() {
+            return dados.map(d => d.temp);
+        }
+
+        // Pega somente a qualidade do ar
+        // Exemplo: [70, 90, 50]
+        function getAr() {
+            return dados.map(d => d.ar);
+        }
+
+        // Pega somente os níveis de ruído
+        // Exemplo: [60, 40, 80]
+        function getRuido() {
+            return dados.map(d => d.ruido);
+        }
+
+        function getUmidade() {
+        return dados.map(d => d.umidade);
+        }
+
+        function getLabels() {
+        return dados.map(d => d.hora);
+        }
+
+        // ======================================================
+        // PEGANDO O CANVAS DOS GRÁFICOS
+        // ======================================================
+
+        // Seleciona o canvas do gráfico de linha
+        const ctxLinha = document.getElementById('linha').getContext('2d');
+        // ctx -> guarda o “modo de desenho” do canvas.
+        // 2d -> Ativa o modo de desenho 2D do canvas.
+
+        // ======================================================
+    // GRÁFICO DE LINHA
+    // ======================================================
+
+    const linha = new Chart(ctxLinha, {
+
+        // Tipo do gráfico
+        type: 'line',
+
+        // Dados do gráfico
+        data: { 
+
+            labels: [
+            ],
+
+            datasets: [
+
+                {
+                    label: 'Temperatura (°C)',
+                    data: [],
+                    borderColor: 'red',
+                    backgroundColor: 'red',
+                    tension: 0.4,
+                    pointRadius: 4
+                },
+
+                {
+                    label: 'Umidade (%)',
+                    data: [],
+                    borderColor: 'blue',
+                    backgroundColor: 'blue',
+                    tension: 0.4,
+                    pointRadius: 4
+                },
+
+                {
+                    label: 'Ruído (dB)',
+                    data: [],
+                    borderColor: 'orange',
+                    backgroundColor: 'orange',
+                    tension: 0.4,
+                    pointRadius: 4
+                },
+
+                {
+                    label: 'Qualidade do Ar',
+                    data: [],
+                    borderColor: 'green',
+                    backgroundColor: 'green',
+                    tension: 0.4,
+                    pointRadius: 4
+                },
+            ]
+        },
+    
+    options: {
+
+    responsive: true,
+
+    plugins: {
+
+        tooltip: {
+
+            enabled: true,
+
+            backgroundColor: "white",
+
+            titleColor: "black",
+
+            bodyColor: "black",
+
+            borderColor: "#ccc",
+
+            borderWidth: 1,
+
+            padding: 12,
+
+            displayColors: true
+        },
+
+        legend: {
+
+            position: 'bottom',
+
+            labels: {
+
+                usePointStyle: true,
+
+                pointStyle: 'circle',
+
+                boxWidth: 8,
+
+                boxHeight: 8,
+
+                padding: 15,
+
+                font: {
+                    size: 14
+                }
+            }
+        }
+    }
+}
+        
+});
+
+    function atualizarGraficos() {
+
+    linha.data.labels = getLabels();
+
+    linha.data.datasets[0].data = getTemp();
+    linha.data.datasets[1].data = getUmidade();
+    linha.data.datasets[2].data = getRuido();
+    linha.data.datasets[3].data = getAr();
+
+    linha.update();
+}
+
+const form = document.getElementById("formDados");
+
+form.addEventListener("submit", function(event){
+    
+    // Impede recarregar a página
+    event.preventDefault();
+
+    // Pega os valores dos inputs
+    const temp = document.getElementById("temp").value;
+    const ar = document.getElementById("ar").value;
+    const ruido = document.getElementById("ruido").value;
+    const umidade = document.getElementById("umidade").value;
+    const hora = document.getElementById("hora").value;
+
+    const horaExiste = dados.some(d => d.hora === hora);
+
+    if (horaExiste) {
+        alert("Essa hora já foi adicionada!");
+        return;
+    }
+    // Adiciona no array
+    dados.push({
+        hora: hora,
+        temp: Number(temp),
+        ar: Number(ar),
+        ruido: Number(ruido),
+        umidade: Number(umidade)
+    });
+
+    // Atualiza o gráfico
+    atualizarGraficos();
+
+    
+});
+});
+</script>
+    
+</body>
